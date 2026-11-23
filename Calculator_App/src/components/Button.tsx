@@ -7,7 +7,7 @@ function Button({ label, className = "" }: ButtonProps) {
   return (
     <button
       type="button"
-      className={`h-16 rounded-2xl text-2xl ${className}`}
+      className={`h-16 border border-[#777] text-2xl ${className}`}
     >
       {label}
     </button>
