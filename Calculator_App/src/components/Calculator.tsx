@@ -1,6 +1,16 @@
 import { useState } from "react";
 import Button from "./Button";
 
+function getFontSize(text: string) {
+  const length = text.length;           
+
+  if (length <= 9) return "text-5xl";   
+  if (length <= 12) return "text-4xl";
+  if (length <= 15) return "text-3xl";
+  if (length <= 18) return "text-2xl";
+  return "text-xl";                      
+}
+
 function Calculator() {
   const [value, setValue] = useState("0");
   const [operator, setOperator] = useState("");
@@ -24,16 +34,16 @@ function Calculator() {
     setIsOperatorClicked(false);
   }
 
-  function getResult(left: number, right: number, op: string): number | null {
+  function getResult(a: number, b: number, op: string): number | null {
     switch (op) {
       case "+":
-        return left + right;
+        return a + b;
       case "-":
-        return left - right;
+        return a - b;
       case "x":
-        return left * right;
+        return a * b;
       case "÷":
-        return right === 0 ? null : left / right;
+        return b === 0 ? null : a / b;
       default:
         return null;
     }
@@ -103,7 +113,7 @@ function Calculator() {
 
   return (
     <div className="w-80 bg-black">
-      <div className="mb-0 flex h-20 items-end justify-end bg-[#777] px-2 pb-1 text-5xl font-light text-white">
+      <div className={`mb-0 flex h-20 items-end justify-end bg-[#777] px-2 pb-1 ${getFontSize(value)} font-light text-white`}>
         {value}
       </div>
       <div className="grid grid-cols-4">
