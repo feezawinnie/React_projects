@@ -1,39 +1,178 @@
+import { useState } from "react";
 import Button from "./Button";
 
 function Calculator() {
-  return(
-    
-     <div className="w-80 bg-black">
-        <div className="mb-0 flex h-20 items-end justify-end bg-[#777] px-2 pb-1 text-5xl font-light text-white">0</div>
-        <div className="grid grid-cols-4">
-            <Button label ="AC" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="+/-" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="%" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="÷" className="bg-[#c66d25] hover:bg-orange-600 text-white"></Button>
+  const [value, setValue] = useState("0");
+  const [operator, setOperator] = useState("");
+  const [previousValue, setPreviousValue] = useState("");
+  const [isOperatorClicked, setIsOperatorClicked] = useState(false);
 
-            <Button label ="7" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="8" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="9" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="x" className="bg-[#c66d25] hover:bg-orange-600 text-white"></Button>
+  function inputValue(newValue: string) {
+    if (newValue === "." && !isOperatorClicked && value.includes(".")) {
+      return;
+    }
 
-            <Button label ="4" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>  
-            <Button label ="5" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="6" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="-" className="bg-[#c66d25] hover:bg-orange-600 text-white"></Button>
+    setValue((currentValue) => {
+      if (isOperatorClicked || currentValue === "Error") {
+        return newValue === "." ? "0." : newValue;
+      }
+      if (newValue === ".") {
+        return currentValue === "0" ? "0." : currentValue + newValue;
+      }
+      return currentValue === "0" ? newValue : currentValue + newValue;
+    });
+    setIsOperatorClicked(false);
+  }
 
-            <Button label ="1" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="2" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="3" className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="+" className="bg-[#c66d25] hover:bg-orange-600 text-white"></Button>
+  function getResult(left: number, right: number, op: string): number | null {
+    switch (op) {
+      case "+":
+        return left + right;
+      case "-":
+        return left - right;
+      case "x":
+        return left * right;
+      case "÷":
+        return right === 0 ? null : left / right;
+      default:
+        return null;
+    }
+  }
 
-            <Button label ="0" className="col-span-2 bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="." className="bg-[#e2e2e2] hover:bg-gray-300 text-black"></Button>
-            <Button label ="=" className="bg-[#c66d25] hover:bg-orange-600 text-white"></Button>
-          
+  function formatResult(result: number | null) {
+    return result === null || !Number.isFinite(result)
+      ? "Error"
+      : String(Number(result.toPrecision(12)));
+  }
 
-        </div>
-     </div>
-    
-  )
+  function handleOperatorClick(op: string) {
+    if (!operator) {
+      setPreviousValue(value);
+      setOperator(op);
+      setIsOperatorClicked(true);
+      return;
+    }
+
+    if (isOperatorClicked) {
+      setOperator(op);
+      return;
+    }
+
+    const result = getResult(Number(previousValue), Number(value), operator);
+    const formattedResult = formatResult(result);
+    setValue(formattedResult);
+    setPreviousValue(formattedResult);
+    setOperator(op);
+    setIsOperatorClicked(true);
+  }
+
+  function calculateResult() {
+    if (!operator || isOperatorClicked) {
+      return;
+    }
+
+    const result = getResult(Number(previousValue), Number(value), operator);
+    setValue(formatResult(result));
+    setPreviousValue("");
+    setOperator("");
+    setIsOperatorClicked(true);
+  }
+
+  function handleEqualClick() {
+    calculateResult();
+  }
+
+  function clearCalculator() {
+    setValue("0");
+    setOperator("");
+    setPreviousValue("");
+    setIsOperatorClicked(false);
+  }
+
+  function toggleSign() {
+    if (value !== "0" && value !== "Error") {
+      setValue(String(Number(value) * -1));
+    }
+  }
+
+  function convertToPercent() {
+    if (value !== "Error") {
+      setValue(String(Number(value) / 100));
+    }
+  }
+
+  return (
+    <div className="w-80 bg-black">
+      <div className="mb-0 flex h-20 items-end justify-end bg-[#777] px-2 pb-1 text-5xl font-light text-white">
+        {value}
+      </div>
+      <div className="grid grid-cols-4">
+        <Button
+          label="AC"
+          className="bg-[#e2e2e2] text-black hover:bg-gray-300"
+          onClick={clearCalculator}
+        />
+        <Button
+          label="+/-"
+          className="bg-[#e2e2e2] text-black hover:bg-gray-300"
+          onClick={toggleSign}
+        />
+        <Button
+          label="%"
+          className="bg-[#e2e2e2] text-black hover:bg-gray-300"
+          onClick={convertToPercent}
+        />
+        <Button
+          label="÷"
+          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          onClick={() => handleOperatorClick("÷")}
+        />
+
+        <Button label="7" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("7")} />
+        <Button label="8" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("8")} />
+        <Button label="9" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("9")} />
+        <Button
+          label="x"
+          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          onClick={() => handleOperatorClick("x")}
+        />
+
+        <Button label="4" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("4")} />
+        <Button label="5" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("5")} />
+        <Button label="6" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("6")} />
+        <Button
+          label="-"
+          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          onClick={() => handleOperatorClick("-")}
+        />
+
+        <Button label="1" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("1")} />
+        <Button label="2" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("2")} />
+        <Button label="3" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("3")} />
+        <Button
+          label="+"
+          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          onClick={() => handleOperatorClick("+")}
+        />
+
+        <Button
+          label="0"
+          className="col-span-2 bg-[#e2e2e2] text-black hover:bg-gray-300"
+          onClick={() => inputValue("0")}
+        />
+        <Button
+          label="."
+          className="bg-[#e2e2e2] text-black hover:bg-gray-300"
+          onClick={() => inputValue(".")}
+        />
+        <Button
+          label="="
+          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          onClick={handleEqualClick}
+        />
+      </div>
+    </div>
+  );
 }
+
 export default Calculator;
