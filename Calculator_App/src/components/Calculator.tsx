@@ -134,7 +134,7 @@ function Calculator() {
         />
         <Button
           label="÷"
-          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          className="bg-[#c66d25] text-white "
           onClick={() => handleOperatorClick("÷")}
         />
 
@@ -143,7 +143,7 @@ function Calculator() {
         <Button label="9" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("9")} />
         <Button
           label="x"
-          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          className="bg-[#c66d25] text-white "
           onClick={() => handleOperatorClick("x")}
         />
 
@@ -152,7 +152,7 @@ function Calculator() {
         <Button label="6" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("6")} />
         <Button
           label="-"
-          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          className="bg-[#c66d25] text-white "
           onClick={() => handleOperatorClick("-")}
         />
 
@@ -161,7 +161,7 @@ function Calculator() {
         <Button label="3" className="bg-[#e2e2e2] text-black hover:bg-gray-300" onClick={() => inputValue("3")} />
         <Button
           label="+"
-          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          className="bg-[#c66d25] text-white "
           onClick={() => handleOperatorClick("+")}
         />
 
@@ -177,7 +177,7 @@ function Calculator() {
         />
         <Button
           label="="
-          className="bg-[#c66d25] text-white hover:bg-orange-600"
+          className="bg-[#c66d25] text-white "
           onClick={handleEqualClick}
         />
       </div>
